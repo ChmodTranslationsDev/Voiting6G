@@ -1,0 +1,283 @@
+:root {
+  --bg: #0b0d12;
+  --bg-elev: #14171f;
+  --bg-elev-2: #1b1f2a;
+  --border: #232838;
+  --border-hover: #2f3548;
+  --text: #e8ecf3;
+  --text-dim: #8b93a7;
+  --accent: #6c8cff;
+  --accent-2: #8f6cff;
+  --accent-glow: rgba(108, 140, 255, .35);
+  --success: #38d39f;
+  --success-bg: rgba(56, 211, 159, .12);
+  --error: #ff5c7c;
+  --error-bg: rgba(255, 92, 124, .12);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Декоративное свечение на фоне */
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(600px circle at 20% 0%, rgba(108,140,255,.12), transparent 60%),
+    radial-gradient(700px circle at 90% 100%, rgba(143,108,255,.10), transparent 60%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ===== Шапка ===== */
+.header { text-align: center; }
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(108,140,255,.1);
+  border: 1px solid rgba(108,140,255,.25);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+h1 {
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #fff 0%, #a9b4d6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ===== Кандидаты ===== */
+.candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.candidate {
+  position: relative;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: border-color .18s, background .18s, transform .1s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  user-select: none;
+}
+
+.candidate:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-elev-2);
+}
+
+.candidate:active { transform: scale(.985); }
+
+.candidate .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.candidate .name {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.candidate .check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-hover);
+  display: grid;
+  place-items: center;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+
+.candidate .check::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: scale(0);
+  transition: transform .18s;
+}
+
+.candidate.selected {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(108,140,255,.08), rgba(108,140,255,.03));
+  box-shadow: 0 0 0 1px var(--accent), 0 8px 30px -10px var(--accent-glow);
+}
+
+.candidate.selected .check { border-color: var(--accent); }
+.candidate.selected .check::after { transform: scale(1); }
+
+/* Скелетон загрузки */
+.skeleton {
+  height: 78px;
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--bg-elev) 25%, var(--bg-elev-2) 50%, var(--bg-elev) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Кнопка ===== */
+.vote-btn {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform .1s, box-shadow .2s, filter .2s;
+  box-shadow: 0 10px 30px -10px var(--accent-glow);
+}
+
+.vote-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 14px 40px -10px var(--accent-glow);
+}
+
+.vote-btn:active:not(:disabled) { transform: scale(.985); }
+
+.vote-btn:disabled {
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  cursor: not-allowed;
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+
+.vote-btn.loading span { opacity: 0; }
+.vote-btn.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Сообщения ===== */
+.msg {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+  animation: fadeIn .25s ease;
+}
+
+.msg.ok {
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid rgba(56,211,159,.25);
+}
+
+.msg.err {
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid rgba(255,92,124,.25);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Футер ===== */
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  padding-top: 4px;
+}
+
+.footer .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  margin-right: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 8px var(--success);
+}
+
+/* ===== Мобилки ===== */
+@media (max-width: 480px) {
+  body { padding: 16px; }
+  .candidate { padding: 16px; }
+  .candidate .avatar { width: 38px; height: 38px; font-size: 15px; }
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Выборы старосты</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="badge">Голосование</div>
+      <h1>Выборы старосты</h1>
+      <p class="subtitle">Выберите одного кандидата. Голос нельзя изменить.</p>
+    </header>
+
+    <section id="candidates" class="candidates">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </section>
+
+    <button id="voteBtn" class="vote-btn" disabled>
+      <span>Проголосовать</span>
+    </button>
+
+    <div id="msg" class="msg" hidden></div>
+
+    <footer class="footer">
+      <span id="status">Загрузка…</span>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
