@@ -1,37 +1,26 @@
-const API = 'https://script.google.com/macros/s/AKfycbxUIIVGMnWjCPuSrtD2I4AhZ36OEc6ysPOTd-WOv0TopMwQ0mBfG72F-9cBd4_qyxdx/exec';
+const API = 'https://script.google.com/macros/s/AKfycbztzg2coIhmAKr7UJ4uGRcLoi8KXpcHNjv6WSgrtNrvnREOsg0TL2ezVVC8BE2_5MyC/exec';
 
-// ===== JSONP для GET =====
+// ===== JSONP =====
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-    const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error('timeout'));
-    }, 12000);
+    const timeout = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 12000);
 
     function cleanup() {
       delete window[cb];
       if (script && script.parentNode) script.remove();
     }
 
-    window[cb] = data => {
-      clearTimeout(timeout);
-      resolve(data);
-      cleanup();
-    };
+    window[cb] = data => { clearTimeout(timeout); resolve(data); cleanup(); };
 
     const script = document.createElement('script');
     script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
-    script.onerror = () => {
-      clearTimeout(timeout);
-      cleanup();
-      reject(new Error('jsonp error'));
-    };
+    script.onerror = () => { clearTimeout(timeout); cleanup(); reject(new Error('jsonp error')); };
     document.body.appendChild(script);
   });
 }
 
-// ===== Идентификатор избирателя =====
+// ===== ID избирателя =====
 let voterId = localStorage.getItem('voterId');
 if (!voterId) {
   voterId = (crypto.randomUUID && crypto.randomUUID()) ||
@@ -42,11 +31,10 @@ if (!voterId) {
 // ===== Состояние =====
 let selected = null;
 const $candidates = document.getElementById('candidates');
-const $voteBtn    = document.getElementById('voteBtn');
-const $msg        = document.getElementById('msg');
-const $status     = document.getElementById('status');
+const $voteBtn = document.getElementById('voteBtn');
+const $msg = document.getElementById('msg');
+const $status = document.getElementById('status');
 
-// ===== Утилиты =====
 function initials(name) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }
@@ -61,12 +49,11 @@ function setStatus(text, online = true) {
   $status.innerHTML = `<span class="dot" style="${online ? '' : 'background:#ff5c7c;box-shadow:0 0 8px #ff5c7c'}"></span>${text}`;
 }
 
-// ===== Загрузка кандидатов =====
+// ===== Кандидаты =====
 async function loadCandidates() {
   try {
     setStatus('Подключение…', false);
     const data = await jsonp(API + '?action=candidates');
-
     if (data.error) throw new Error(data.error);
 
     const list = data.candidates || [];
@@ -107,7 +94,6 @@ function select(el, name) {
 // ===== Голосование =====
 $voteBtn.onclick = async () => {
   if (!selected) return;
-
   $voteBtn.disabled = true;
   $voteBtn.classList.add('loading');
 
@@ -119,11 +105,9 @@ $voteBtn.onclick = async () => {
       body: JSON.stringify({ action: 'vote', candidate: selected, voterId })
     });
 
-    // no-cors не даёт ответ — считаем, что ок
     showMsg('Голос учтён. Спасибо!', 'ok');
     setStatus('Голос принят', true);
 
-    // Блокируем повтор
     document.querySelectorAll('.candidate').forEach(c => {
       c.style.pointerEvents = 'none';
       c.style.opacity = '0.6';
@@ -138,5 +122,39 @@ $voteBtn.onclick = async () => {
   }
 };
 
+// ===== Статус (итоги) =====
+async function loadStatus() {
+  try {
+    const data = await jsonp(API + '?action=status');
+    if (!data.finished) return;
+
+    const banner = document.getElementById('winnerBanner');
+    const nameEl = document.getElementById('winnerName');
+    const statsEl = document.getElementById('winnerStats');
+
+    nameEl.textContent = '🏆 ' + data.winner;
+
+    const entries = Object.entries(data.results || {}).sort((a, b) => b[1] - a[1]);
+    statsEl.innerHTML = entries.map(([n, c]) => {
+      const word = c === 1 ? 'голос' : (c < 5 ? 'голоса' : 'голосов');
+      return `<div class="row ${n === data.winner ? 'winner' : ''}">
+        <span>${n}</span><span>${c} ${word}</span>
+      </div>`;
+    }).join('');
+
+    banner.hidden = false;
+
+    document.querySelectorAll('.candidate').forEach(c => {
+      c.style.pointerEvents = 'none';
+      c.style.opacity = '0.4';
+    });
+    const btn = document.getElementById('voteBtn');
+    btn.disabled = true;
+    btn.querySelector('span').textContent = 'Голосование завершено';
+  } catch (e) {
+    console.warn('status check failed', e);
+  }
+}
+
 // ===== Старт =====
-loadCandidates();
+loadCandidates().then(loadStatus);
