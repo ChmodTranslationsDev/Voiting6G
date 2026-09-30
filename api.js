@@ -1,5 +1,5 @@
 // Вставь сюда свой URL Apps Script
-const API = 'https://script.google.com/macros/s/AKfycbyUL6oNzppDun9vCgvAoS-7CmTAxv9z8ARZ9zzWzhBwu864Od3a0Ae4XK7X6_yb7zm3/exec';
+const API = 'https://script.google.com/macros/s/AKfycbx5uRfQYSGkLbnvqtEsuN0boRl77xG70yVuLOLODgMyqumwufMJRoRw816toSHyYwAK/exec';
 
 // ===== JSONP =====
 function jsonp(url) {
