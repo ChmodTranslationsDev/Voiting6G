@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Админ — Выборы старосты</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="badge">Админ-панель</div>
+      <h1>Управление выборами</h1>
+    </header>
+
+    <section id="loginView" class="card">
+      <h2>Вход</h2>
+      <div class="row-flex">
+        <input type="password" id="passwordInput" placeholder="Пароль администратора">
+        <button class="btn" id="loginBtn">Войти</button>
+      </div>
+    </section>
+
+    <section id="panelView" class="admin-grid" hidden>
+
+      <div class="card">
+        <h2>1. ID для голосующего вручную</h2>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">
+          Сгенерируй ID и передай его ученику, у которого не работает сайт.
+        </p>
+        <button class="btn btn-ghost" id="genIdBtn">Сгенерировать ID</button>
+        <div id="idBox" class="id-box" style="margin-top:12px; display:none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>2. Добавить голос вручную</h2>
+        <div class="row-flex" style="margin-bottom:10px;">
+          <select id="candidateSelect"></select>
+        </div>
+        <div class="row-flex">
+          <input type="text" id="voterIdInput" placeholder="ID избирателя">
+          <button class="btn" id="addVoteBtn">Добавить</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. Текущая статистика</h2>
+        <div id="statsBox">Загрузка…</div>
+        <div class="divider"></div>
+        <button class="btn btn-ghost" id="refreshBtn" style="width:100%;">Обновить</button>
+      </div>
+
+      <div class="card">
+        <h2>4. Итоги</h2>
+        <div class="row-flex">
+          <button class="btn" id="finishBtn" style="flex:1;">Подвести итоги</button>
+          <button class="btn btn-danger" id="resetBtn">Сбросить</button>
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:10px;">
+          После «Подвести итоги» победитель появится на основной странице.
+        </p>
+      </div>
+
+      <div id="adminMsg" class="msg" hidden></div>
+    </section>
+
+    <footer class="footer">
+      <a href="index.html" style="color:var(--text-dim);text-decoration:none;">← На основной сайт</a>
+    </footer>
+  </main>
+
+<script>
+const API = 'ВСТАВЬ_URL_ИЗ_APPS_SCRIPT';
+let password = sessionStorage.getItem('adminPwd') || '';
+let candidates = [];
+
+const $ = id => document.getElementById(id);
+
+function showMsg(text, type = 'ok') {
+  const m = $('adminMsg');
+  m.textContent = text;
+  m.className = 'msg ' + type;
+  m.hidden = false;
+  setTimeout(() => { m.hidden = true; }, 3500);
+}
+
+async function apiGet(params) {
+  const url = API + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(data) {
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+$('loginBtn').onclick = async () => {
+  const pwd = $('passwordInput').value.trim();
+  if (!pwd) return;
+  const res = await apiPost({ action: 'adminLogin', password: pwd });
+  if (res.error) { showMsg('Неверный пароль', 'err'); return; }
+  password = pwd;
+  sessionStorage.setItem('adminPwd', pwd);
+  enterPanel();
+};
+
+$('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') $('loginBtn').click();
+});
+
+async function enterPanel() {
+  $('loginView').hidden = true;
+  $('panelView').hidden = false;
+  await loadCandidates();
+  await loadStats();
+}
+
+async function loadCandidates() {
+  const data = await apiGet({ action: 'candidates' });
+  candidates = data.candidates || [];
+  const sel = $('candidateSelect');
+  sel.innerHTML = '';
+  candidates.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
+
+$('genIdBtn').onclick = async () => {
+  const res = await apiPost({ action: 'adminGenId', password });
+  if (res.error) { showMsg(res.error, 'err'); return; }
+  const box = $('idBox');
+  box.textContent = res.voterId;
+  box.style.display = 'block';
+  $('voterIdInput').value = res.voterId;
+  showMsg('ID создан и подставлен в поле ниже');
+};
+
+$('addVoteBtn').onclick = async () => {
+  const candidate = $('candidateSelect').value;
+  const voterId = $('voterIdInput').value.trim();
+  if (!candidate) { showMsg('Выбери кандидата', 'err'); return; }
+  if (!voterId) { showMsg('Нужен ID', 'err'); return; }
+
+  const res = await apiPost({ action: 'adminAddVote', password, candidate, voterId });
+  if (res.error) {
+    const map = {
+      already_voted: 'Этот ID уже голосовал',
+      bad_password: 'Пароль слетел, войди заново',
+      no_candidate: 'Кандидат не найден'
+    };
+    showMsg(map[res.error] || res.error, 'err');
+    return;
+  }
+  showMsg('Голос добавлен за ' + candidate);
+  $('voterIdInput').value = '';
+  $('idBox').style.display = 'none';
+  await loadStats();
+};
+
+async function loadStats() {
+  const data = await apiGet({ action: 'status' });
+  const box = $('statsBox');
+  if (!data.results || Object.keys(data.results).length === 0) {
+    box.innerHTML = '<p style="color:var(--text-dim)">Пока нет голосов</p>';
+    return;
+  }
+  const entries = Object.entries(data.results).sort((a, b) => b[1] - a[1]);
+  box.innerHTML = entries.map(([name, count]) =>
+    `<div class="stats-row"><span class="stats-name">${name}</span><span class="stats-count">${count}</span></div>`
+  ).join('') +
+  `<div class="stats-row" style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border)">
+     <span style="color:var(--text-dim)">Всего голосов</span>
+     <span style="color:var(--text);font-weight:600">${data.total}</span>
+   </div>` +
+  (data.finished ? `<div style="margin-top:12px;color:var(--success);font-size:13px;">✅ Итоги подведены: ${data.winner}</div>` : '');
+}
+
+$('refreshBtn').onclick = loadStats;
+
+$('finishBtn').onclick = async () => {
+  if (!confirm('Подвести итоги? Победитель появится на основном сайте.')) return;
+  const res = await apiPost({ action: 'adminFinish', password });
+  if (res.error) { showMsg(res.error, 'err'); return; }
+  showMsg('Итоги подведены: ' + res.winner);
+  await loadStats();
+};
+
+$('resetBtn').onclick = async () => {
+  if (!confirm('Сбросить статус «итоги подведены»? Голоса останутся.')) return;
+  const res = await apiPost({ action: 'adminReset', password });
+  if (res.error) { showMsg(res.error, 'err'); return; }
+  showMsg('Статус сброшен');
+  await loadStats();
+};
+
+if (password) enterPanel();
+</script>
+</body>
+</html>
