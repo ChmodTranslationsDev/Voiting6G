@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Итоги голосования</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="badge">Результаты</div>
+      <h1>Итоги голосования</h1>
+      <p class="subtitle" id="subtitle">Загрузка…</p>
+    </header>
+
+    <section id="winnerCard" class="winner-banner" hidden>
+      <div class="badge badge-success">Победитель</div>
+      <h2 id="winnerName"></h2>
+    </section>
+
+    <section class="card">
+      <h2>Распределение голосов</h2>
+      <div id="statsBox">Загрузка…</div>
+    </section>
+
+    <footer class="footer">
+      <a href="index.html" class="link-dim">← На главную</a>
+    </footer>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="results.js"></script>
+</body>
+</html>

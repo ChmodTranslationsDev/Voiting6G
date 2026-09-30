@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Выбор этапа</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="badge">Голосование</div>
+      <h1>Выберите этап</h1>
+      <p class="subtitle">Каждый этап — отдельное голосование</p>
+    </header>
+
+    <div class="role-buttons">
+      <button class="role-btn" id="stage1Btn">
+        <div class="role-title">Этап 1</div>
+        <div class="role-desc">Первичное голосование. Проходят только набравшие &gt;5%</div>
+      </button>
+      <button class="role-btn" id="stage2Btn">
+        <div class="role-title">Этап 2</div>
+        <div class="role-desc">Финальное голосование среди прошедших</div>
+      </button>
+    </div>
+
+    <button class="btn btn-ghost" id="backBtn" style="width:100%;">← Назад</button>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="stage.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Код кандидата</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="badge">Кандидат</div>
+      <h1>Введите код</h1>
+      <p class="subtitle">Код выдал организатор выборов</p>
+    </header>
+
+    <div class="card">
+      <input type="text" id="candidateCodeInput" placeholder="cand-xxxxxxxx-xxxx-…" autocomplete="off">
+      <button class="btn" id="submitBtn" style="width:100%;margin-top:12px;">Войти</button>
+    </div>
+
+    <button class="btn btn-ghost" id="backBtn" style="width:100%;">← Назад</button>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="code.js"></script>
+</body>
+</html>

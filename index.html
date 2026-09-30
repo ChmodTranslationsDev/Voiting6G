@@ -16,33 +16,40 @@
     <header class="header">
       <div class="badge">Голосование</div>
       <h1>Выборы старосты</h1>
-      <p class="subtitle">Выберите одного кандидата. Голос нельзя изменить.</p>
+      <p class="subtitle">Кто вы?</p>
     </header>
 
-    <section id="winnerBanner" class="winner-banner" hidden>
-      <div class="badge badge-success">Итоги подведены</div>
-      <h2 id="winnerName"></h2>
-      <div id="winnerStats" class="winner-stats"></div>
-    </section>
-
-    <section id="candidates" class="candidates">
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-    </section>
-
-    <button id="voteBtn" class="vote-btn" disabled>
-      <span>Проголосовать</span>
-    </button>
-
-    <div id="msg" class="msg" hidden></div>
+    <div class="role-buttons">
+      <button class="role-btn" id="voterBtn">
+        <div class="role-title">Голосующий</div>
+        <div class="role-desc">Войти и проголосовать</div>
+      </button>
+      <button class="role-btn" id="candidateBtn">
+        <div class="role-title">Кандидат</div>
+        <div class="role-desc">Нужен специальный код</div>
+      </button>
+    </div>
 
     <footer class="footer">
-      <span id="status">Загрузка…</span>
+      <a href="results.html" class="link-dim">Итоги голосования</a>
       <a href="admin.html" class="admin-link">admin</a>
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <script src="api.js"></script>
+  <script>
+    // Сброс предыдущей сессии при входе в корень
+    // (если хочешь — закомментируй, чтобы не сбрасывать)
+    Session.clear();
+
+    document.getElementById('voterBtn').onclick = () => {
+      Session.role = 'voter';
+      location.href = 'stage.html';
+    };
+
+    document.getElementById('candidateBtn').onclick = () => {
+      location.href = 'code.html';
+    };
+  </script>
 </body>
 </html>

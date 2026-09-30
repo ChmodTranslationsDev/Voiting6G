@@ -53,7 +53,6 @@ body {
   gap: 22px;
 }
 
-/* ===== Шапка ===== */
 .header { text-align: center; }
 
 .badge {
@@ -93,12 +92,34 @@ h1 {
   line-height: 1.5;
 }
 
-/* ===== Кандидаты ===== */
-.candidates {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.screen { display: flex; flex-direction: column; gap: 22px; }
+
+.role-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+.role-btn {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color .18s, background .18s, transform .1s;
 }
+
+.role-btn:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-elev-2);
+}
+
+.role-btn:active { transform: scale(.98); }
+.role-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.role-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.role-desc { font-size: 13px; color: var(--text-dim); }
+
+.candidates { display: flex; flex-direction: column; gap: 10px; }
 
 .candidate {
   position: relative;
@@ -134,11 +155,7 @@ h1 {
   flex-shrink: 0;
 }
 
-.candidate .name {
-  font-size: 16px;
-  font-weight: 500;
-  flex: 1;
-}
+.candidate .name { font-size: 16px; font-weight: 500; flex: 1; }
 
 .candidate .check {
   width: 22px;
@@ -170,6 +187,14 @@ h1 {
 .candidate.selected .check { border-color: var(--accent); }
 .candidate.selected .check::after { transform: scale(1); }
 
+.candidate-blocked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.candidate-blocked:hover { border-color: var(--border); background: var(--bg-elev); }
+
 .skeleton {
   height: 78px;
   border-radius: var(--radius);
@@ -183,7 +208,6 @@ h1 {
   100% { background-position: -200% 0; }
 }
 
-/* ===== Кнопка ===== */
 .vote-btn {
   position: relative;
   width: 100%;
@@ -216,6 +240,7 @@ h1 {
 }
 
 .vote-btn.loading span { opacity: 0; }
+
 .vote-btn.loading::after {
   content: '';
   position: absolute;
@@ -231,7 +256,6 @@ h1 {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ===== Сообщения ===== */
 .msg {
   padding: 14px 16px;
   border-radius: var(--radius-sm);
@@ -259,7 +283,6 @@ h1 {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Победитель ===== */
 .winner-banner {
   text-align: center;
   padding: 24px;
@@ -268,11 +291,7 @@ h1 {
   border: 1px solid rgba(56,211,159,.3);
 }
 
-.winner-banner h2 {
-  font-size: 22px;
-  margin: 10px 0 14px;
-  color: var(--text);
-}
+.winner-banner h2 { font-size: 22px; margin: 10px 0 14px; color: var(--text); }
 
 .winner-stats {
   font-size: 13px;
@@ -282,15 +301,9 @@ h1 {
   gap: 6px;
 }
 
-.winner-stats .row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-}
-
+.winner-stats .row { display: flex; justify-content: space-between; padding: 6px 0; }
 .winner-stats .row.winner { color: var(--success); font-weight: 600; }
 
-/* ===== Футер ===== */
 .footer {
   text-align: center;
   font-size: 12px;
@@ -322,14 +335,12 @@ h1 {
 
 .admin-link:hover { opacity: 1; }
 
-/* ===== Мобилки ===== */
 @media (max-width: 480px) {
   body { padding: 16px; }
   .candidate { padding: 16px; }
   .candidate .avatar { width: 38px; height: 38px; font-size: 15px; }
 }
 
-/* ===== Админ ===== */
 .admin-grid { display: flex; flex-direction: column; gap: 18px; }
 
 .card {
@@ -339,11 +350,7 @@ h1 {
   padding: 20px;
 }
 
-.card h2 {
-  font-size: 16px;
-  margin-bottom: 14px;
-  font-weight: 600;
-}
+.card h2 { font-size: 16px; margin-bottom: 14px; font-weight: 600; }
 
 .row-flex { display: flex; gap: 10px; flex-wrap: wrap; }
 
@@ -404,3 +411,11 @@ input:focus, select:focus { border-color: var(--accent); }
 .stats-name { color: var(--text); }
 .stats-count { color: var(--accent); font-weight: 600; }
 .divider { height: 1px; background: var(--border); margin: 8px 0; }
+.link-dim {
+  color: var(--text-dim);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.link-dim:hover { color: var(--text); }
